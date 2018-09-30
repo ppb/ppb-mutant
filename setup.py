@@ -11,7 +11,7 @@ setup(
     version='0.4.0',
     packages=['ppb_mutant'],
     install_requires=[
-        'ppb',
+        'ppb~=0.4.0',
     ],
     url='https://github.com/astronouth7303/ppb-mutant',
     license='Artistic-2.0',

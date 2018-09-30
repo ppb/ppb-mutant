@@ -12,7 +12,10 @@ DOWNLOADS = [
 ]
 
 def parse_args():
-    parser = argparse.ArgumentParser(description='Download the Mutant Standard emoji')
+    parser = argparse.ArgumentParser(
+        description=
+            'Download the Mutant Standard emoji to mutant/ in the current directory.',
+    )
 
     return parser.parse_args()
 
