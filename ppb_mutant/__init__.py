@@ -11,8 +11,8 @@ print(
 
 
 class MutantSprite(ppb.BaseSprite):
-    kind = 'hmn'
-    color = 'h5'
+    morph = 'hmn'
+    tone = 'h5'
     emoji = 'symbols/restrictive/no_entry'
 
     @property
@@ -21,5 +21,5 @@ class MutantSprite(ppb.BaseSprite):
             return DoNotRender
         else:
             return 'mutant/{}.png'.format(
-                self.emoji.format(kind=self.kind, color=self.color)
+                self.emoji.format(morph=self.morph, tone=self.tone)
             )
