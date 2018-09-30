@@ -1,7 +1,7 @@
 ppb-mutant
 ==========
 
-This library provides convenient support for the [Mutant Standard emoji](https://mutant.tech) for games using the [PusuedPyBear engine](https://github.com/ppb/pursuedpybear).
+This library provides convenient support for the [Mutant Standard emoji](https://mutant.tech) for games using the [PursuedPyBear engine](https://github.com/ppb/pursuedpybear).
 
 Setup
 =====
