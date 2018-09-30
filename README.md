@@ -23,12 +23,12 @@ class SlimeSprite(ppb_mutant.MutantSprite):
     emoji = 'people_animals/creatures/other/slime'
 ```
 
-In addition, the formatting syntax with the variables `kind` and `skin` may be
+In addition, the formatting syntax with the variables `morph` and `skin` may be
 used for Mutant's customization features:
 
 ```python
 class PunchRightSprite(ppb_mutant.MutantSprite):
-    emoji = 'expressions/hands/{kind}/fist_facing_right_{kind}_{skin}'
+    emoji = 'expressions/hands/{morph}/fist_facing_right_{morph}_{skin}'
     morph = 'clw'
     tone = 'r2'  # "colour"
 ```
