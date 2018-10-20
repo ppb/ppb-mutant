@@ -5,6 +5,8 @@ import urllib.request
 import zipfile
 import io
 import argparse
+import re
+from ppb_mutant import MORPHS, TONES
 
 DOWNLOADS = [
     ('https://mutant.tech/dl/0.3.0/mutstd_0.3.0_shortcode_png64.zip', 'mutstd_0.3.0_shortcode_png64/emoji/'),
@@ -20,25 +22,72 @@ def parse_args():
 
     return parser.parse_args()
 
+
 def open_zip(url):
     with urllib.request.urlopen(url) as resp:
         return io.BytesIO(resp.read())
 
+class AliasCompiler:
+    MORPHTONE = re.compile(f"^(.*)_({'|'.join(MORPHS)})_({'|'.join(TONES)})$")
+    TONEONLY = re.compile(f"^(.*)_({'|'.join(TONES)})$")
+
+    def __init__(self):
+        self.codes = {}
+        self.code2alias = {}
+        self.aliases = {}
+
+    def guess_alias(self, shortcode):
+        m = self.MORPHTONE.match(shortcode)
+        if m:
+            name = m.group(1)
+            return name, name + "_{morph}_{tone}"
+        m = self.TONEONLY.match(shortcode)
+        if m:
+            name = m.group(1)
+            return name, name + "_{tone}"
+        return None, None
+
+    def add_path(self, path):
+        path, _ = os.path.splitext(path)
+        shortcode = os.path.basename(path)
+        alias, expansion = self.guess_alias(shortcode)
+        self.codes[shortcode] = path
+        if alias is None:
+            return None
+        self.code2alias[shortcode] = alias
+        if alias not in self.aliases:
+            self.aliases[alias] = expansion
+        else:
+            assert self.aliases[alias] == expansion
+
+    def write_code_index(self, stream):
+        for code, path in self.codes.items():
+            alias = self.code2alias.get(code) or ''
+            print(f"{code}\t{path}\t{alias}", file=stream)
+
+    def write_alias_index(self, stream):
+        for alias, expansion in self.aliases.items():
+            print(f"{alias}\t{expansion}", file=stream)
+
 
 def extract_zip(fo, root):
     zf = zipfile.ZipFile(fo, 'r')
-    with open('mutant/index.txt', 'at') as index:
-        for zi in zf.infolist():
-            if not zi.filename.startswith(root):
-                continue
-            if zi.filename == root:
-                continue
-            print('\t' + zi.filename[len(root):])
-            target = os.path.join('mutant', os.path.basename(zi.filename))
-            if not zi.is_dir():
-                with open(target, 'wb') as tf:
-                    tf.write(zf.read(zi.filename))
-                print(zi.filename[len(root):], file=index)
+    aliases = AliasCompiler()
+    for zi in zf.infolist():
+        if not zi.filename.startswith(root):
+            continue
+        if zi.filename == root:
+            continue
+        print('\t' + zi.filename[len(root):])
+        target = os.path.join('mutant', os.path.basename(zi.filename))
+        if not zi.is_dir():
+            with open(target, 'wb') as tf:
+                tf.write(zf.read(zi.filename))
+            aliases.add_path(zi.filename[len(root):])
+    with open("mutant/index.txt", 'at') as indexfile:
+        aliases.write_code_index(indexfile)
+    with open("mutant/aliases.txt", 'at') as indexfile:
+        aliases.write_alias_index(indexfile)
 
 
 def make_root():
