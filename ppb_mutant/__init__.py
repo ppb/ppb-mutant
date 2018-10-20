@@ -80,7 +80,8 @@ class MutantSprite(ppb.BaseSprite):
         if self.emoji is DoNotRender:
             return DoNotRender
         else:
-            resolved = self._aliases.get(self.emoji, self.emoji)
+            shortcode = os.path.basename(self.emoji)  # Transitional
+            resolved = self._aliases.get(shortcode, shortcode)
             resolved = resolved.format(morph=self.morph, tone=self.tone or '')
             resolved = resolved.rstrip('_')
             return 'mutant/{}.png'.format(resolved)
