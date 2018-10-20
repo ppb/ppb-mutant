@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+import sys
 import urllib.request
 import zipfile
 import io
@@ -35,15 +36,28 @@ def extract_zip(fo, root):
             print('\t' + zi.filename[len(root):])
             target = os.path.join('mutant', os.path.basename(zi.filename))
             if not zi.is_dir():
-                assert not os.path.exists(target)
                 with open(target, 'wb') as tf:
                     tf.write(zf.read(zi.filename))
                 print(zi.filename[len(root):], file=index)
 
 
+def make_root():
+    if os.path.exists('mutant'):
+        ans = "?"
+        while ans not in 'yn':
+            ans = input("mutant already exists. Files may be overwritten. Would you like to continue? ")
+            if not ans:
+                ans = '?'
+            ans = ans.lower()[0]
+        if ans == 'n':
+            sys.exit("Exiting")
+    else:
+        os.makedirs('mutant')
+
+
 def main():
     args = parse_args()
-    os.makedirs('mutant')
+    make_root()
     for url, root in DOWNLOADS:
         print(url)
         with open_zip(url) as fo:
