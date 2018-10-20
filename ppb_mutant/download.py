@@ -26,18 +26,19 @@ def open_zip(url):
 
 def extract_zip(fo, root):
     zf = zipfile.ZipFile(fo, 'r')
-    for zi in zf.infolist():
-        print(zi)
-        if not zi.filename.startswith(root):
-            continue
-        if zi.filename == root:
-            continue
-        target = os.path.join('mutant', zi.filename[len(root):])
-        if zi.is_dir():
-            os.makedirs(target)
-        else:
-            with open(target, 'wb') as tf:
-                tf.write(zf.read(zi.filename))
+    with open('mutant/index.txt', 'at') as index:
+        for zi in zf.infolist():
+            if not zi.filename.startswith(root):
+                continue
+            if zi.filename == root:
+                continue
+            print('\t' + zi.filename[len(root):])
+            target = os.path.join('mutant', os.path.basename(zi.filename))
+            if not zi.is_dir():
+                assert not os.path.exists(target)
+                with open(target, 'wb') as tf:
+                    tf.write(zf.read(zi.filename))
+                print(zi.filename[len(root):], file=index)
 
 
 def main():
