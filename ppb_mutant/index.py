@@ -133,6 +133,8 @@ class IndexScene(ppb.BaseScene):
         )
         print("->", dest)
 
+        print(dest - cam.position)
+
         cam.position = dest
 
     last_frame = None
