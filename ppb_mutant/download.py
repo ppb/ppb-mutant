@@ -27,9 +27,12 @@ def open_zip(url):
     with urllib.request.urlopen(url) as resp:
         return io.BytesIO(resp.read())
 
+real_tones = [t for t in TONES if t is not None]
+
 class AliasCompiler:
-    MORPHTONE = re.compile(f"^(.*)_({'|'.join(MORPHS)})_({'|'.join(TONES)})$")
-    TONEONLY = re.compile(f"^(.*)_({'|'.join(TONES)})$")
+    MORPHTONE = re.compile(f"^(.*)_({'|'.join(MORPHS)})_({'|'.join(real_tones)})$")
+    TONEONLY = re.compile(f"^(.*)_({'|'.join(real_tones)})$")
+    MORPHONLY = re.compile(f"^(.*)_({'|'.join(MORPHS)})$")
 
     def __init__(self):
         self.codes = {}
@@ -38,6 +41,10 @@ class AliasCompiler:
 
     def guess_alias(self, shortcode):
         m = self.MORPHTONE.match(shortcode)
+        if m:
+            name = m.group(1)
+            return name, name + "_{morph}_{tone}"
+        m = self.MORPHONLY.match(shortcode)  # These are actually morph/tone without a tone
         if m:
             name = m.group(1)
             return name, name + "_{morph}_{tone}"
