@@ -92,9 +92,13 @@ class IndexScene(ppb.BaseScene):
         cam.frame_height = cam.viewport_height / cam.pixel_ratio
         cam.half_width = cam.frame_width / 2
         cam.half_height = cam.frame_height / 2
-        
+
+    frame_happened = False
+    
     def on_mouse_motion(self, mouse, signal):
-        return
+        if not self.frame_happened:
+            return
+        self.frame_happened = False
         print("mouse", mouse.position)
         x, y = mouse.position
         cam = self.main_camera
@@ -133,11 +137,7 @@ class IndexScene(ppb.BaseScene):
 
     last_frame = None
     def on_pre_render(self, event, signal):
-        now = perf_counter()
-        if self.last_frame is not None:
-            dt = now - self.last_frame
-            print(dt)
-        self.last_frame = now
+        self.frame_happened = True
 
 
 if __name__ == '__main__':
