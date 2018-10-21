@@ -1,3 +1,12 @@
+"""
+Tools for using Mutant Standard emoji from ppb games.
+
+Constants:
+* MORPHS: Valid morph values
+* TONES: Valid tone values
+* TONES_HMN, TONES_PAW, TONES_CLW: Valid tone values for specific morphs
+* TONES_ALL: Valid tone values for all morphs
+"""
 from typing import Iterable, Tuple, Optional
 import ppb
 from ppb.flags import DoNotRender
@@ -56,7 +65,7 @@ def load_index() -> Iterable[Tuple[str, str, Optional[str]]]:
 @functools.lru_cache()
 def load_aliases() -> Iterable[Tuple[str, str]]:
     """
-    Loads the index file, yielding (shortcode, original path, alias)
+    Loads the aliases file, yielding (shortcode, original path, alias)
     """
     if not os.path.exists('mutant/aliases.txt'):
         # Does not exist yet
@@ -72,6 +81,10 @@ def load_aliases() -> Iterable[Tuple[str, str]]:
 
 
 def is_valid_morph_tone(morph, tone):
+    """
+    Returns True if this is a valid morph, a valid tone, and they are valid
+    together.
+    """
     if morph not in MORPHS:
         return False
     if tone in TONES_ALL:
@@ -88,9 +101,20 @@ def is_valid_morph_tone(morph, tone):
 
 
 class MutantSprite(ppb.BaseSprite):
-    morph = 'hmn'
-    tone = None
-    emoji = 'symbols/restrictive/no_entry'
+    """
+    Replaces a Sprite's image with emoji, which is pulled from the Mutant
+    Standard emoji.
+
+    Morph and tone customization can be used via {}-format.
+
+    Attributes (can be set at the class level):
+    * emoji: the emoji to render
+    * morph: the hand shape to use (hmn, paw, or clw)
+    * tone: the tone to color with
+    """
+    morph: str = 'hmn'
+    tone: typing.Optional[str] = None
+    emoji: typing.Union[str, typing.Type[DoNotRender]] = 'no_entry'
 
     _aliases = dict(load_aliases())
 
@@ -128,7 +152,9 @@ class SelectScene(ppb.BaseScene):
     _tone = None
     
     class Sprite(MutantSprite):
-        pass
+        """
+        The sprite to use in the menu
+        """
 
     def __init__(self, *p, morph='hmn', tone=None, **kw):
         super().__init__(*p, **kw)
@@ -154,6 +180,9 @@ class SelectScene(ppb.BaseScene):
         ymax = max(s.position.y + 0.5 for s in self)
 
     def build_sprite(self, emoji, morph=None, tone=None, **kwargs):
+        """
+        Instantiates the sprite, with the given emoji, morph, tone, and args.
+        """
         sprite = self.Sprite(**kwargs)
         sprite.emoji = emoji
         if morph:
@@ -248,4 +277,6 @@ class SelectScene(ppb.BaseScene):
                 return
 
     def do_update_morphtone(self):
-        pass
+        """
+        Called whenever the morph or tone is updated. Override with your own class.
+        """
