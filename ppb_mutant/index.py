@@ -157,9 +157,15 @@ class IndexScene(ppb.BaseScene):
         self.frame_happened = True
 
     def change(self):
-        rv = super().change()
+        if self.next:
+            n = {
+                'scene_class': self.next,
+                'kwargs': {'morph': EmojiSprite.morph, 'tone': EmojiSprite.tone},
+            }
+        else:
+            n = {'scene_class': None}
         self.next = None
-        return rv
+        return self.running, n
 
 
 class CustomizeScene(SelectScene):
