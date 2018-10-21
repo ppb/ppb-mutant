@@ -5,7 +5,7 @@ Show an index of available emoji
 import ppb
 import os.path
 import math
-from ppb_mutant import MutantSprite, load_index
+from ppb_mutant import MutantSprite, load_index, SelectScene
 import pathlib
 from time import perf_counter
 
@@ -39,12 +39,27 @@ class EmojiSprite(MutantSprite, Region):
     resource_path = pathlib.Path('.')
 
 
+class OpenMenuSprite(MutantSprite, Region):
+    emoji = 'color_modifier'
+    resource_path = pathlib.Path('.')
+
+    def on_button_pressed(self, mouse, signal):
+        if self.contains(mouse.position) and mouse.button is ppb.buttons.Primary:
+            mouse.scene.next = CustomizeScene
+
+    def on_pre_render(self, event, signal):
+        cam = event.scene.main_camera
+        self.position = ppb.Vector(cam.frame_left + 0.5, cam.frame_top + 0.5)
+
+
 class IndexScene(ppb.BaseScene):
     def __init__(self, *p, **kw):
         super().__init__(*p, pixel_ratio=64, **kw)
 
         for s in self.get_options():
             self.add(s, tags=['emoji'])
+
+        self.add(OpenMenuSprite())
 
         self.xmin = min(s.position.x - 0.5 for s in self.get(tag='emoji'))
         self.xmax = max(s.position.x + 0.5 for s in self.get(tag='emoji'))
@@ -140,6 +155,31 @@ class IndexScene(ppb.BaseScene):
     last_frame = None
     def on_pre_render(self, event, signal):
         self.frame_happened = True
+
+    def change(self):
+        rv = super().change()
+        self.next = None
+        return rv
+
+
+class CustomizeScene(SelectScene):
+    class Sprite(SelectScene.Sprite):
+        resource_path = pathlib.Path('.')
+
+    class BackSprite(Region, Sprite):
+        emoji = 'tick'
+        def on_button_pressed(self, mouse, signal):
+            if self.contains(mouse.position) and mouse.button is ppb.buttons.Primary:
+                mouse.scene.running = False
+
+    def __init__(self, *p, **kw):
+        super().__init__(*p, **kw)
+        left = self.main_camera.frame_left
+        self.add(self.BackSprite(pos=(left + 2.5, -1.5)))
+
+    def do_update_morphtone(self):
+        EmojiSprite.morph = self.morph
+        EmojiSprite.tone = self.tone
 
 
 if __name__ == '__main__':

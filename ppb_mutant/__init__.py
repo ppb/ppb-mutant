@@ -202,7 +202,6 @@ class SelectScene(ppb.BaseScene):
         # TONES_ALL
         tones = (t for t in TONES_ALL if t is not None)
         for tone, pos in zip(tones, self._grid()):
-            print(tone, pos)
             yield self.build_sprite(emoji='color_modifier', tone=tone, pos=pos)
 
     @property
