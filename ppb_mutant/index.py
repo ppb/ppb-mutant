@@ -117,7 +117,6 @@ class IndexScene(ppb.BaseScene):
         if not self.frame_happened:
             return
         self.frame_happened = False
-        print("mouse", mouse.position)
         x, y = mouse.position
         cam = self.main_camera
 
@@ -132,28 +131,18 @@ class IndexScene(ppb.BaseScene):
         # if not (self.xmin <= x <= self.xmax and self.ymin <= y <= self.ymax):
         #     return
 
-        print("cam.x", frame_left, frame_width, frame_right)
-        print("cam.y", frame_top, frame_height, frame_bottom)
         xpercent = (x - frame_left) / frame_width
         ypercent = (y - frame_top) / frame_height
-
-        print("x", self.xmin, "->", self.xmax, "\t", xpercent)
-        print("y", self.ymin, "->", self.ymax, "\t", ypercent)
 
         if xpercent < 0: xpercent = 0
         if xpercent > 1: xpercent = 1
         if ypercent < 0: ypercent = 0
         if ypercent > 1: ypercent = 1
 
-        dest = ppb.Vector(
+        cam.position = ppb.Vector(
             (self.xmax - self.xmin) * xpercent + self.xmin,
             (self.ymax - self.ymin) * ypercent + self.ymin,
         )
-        print("->", dest)
-
-        print(dest - cam.position)
-
-        cam.position = dest
 
     def change(self):
         if self.next:
