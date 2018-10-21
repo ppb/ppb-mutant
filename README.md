@@ -5,6 +5,11 @@ This library provides convenient support for the [Mutant Standard emoji](https:/
 
 This version is for PursuedPyBear v0.4.0 and Mutant Standard v0.3.0.
 
+On Versions: This project is semi-semver: Whenever the matching PPB or Mutant
+dependencies are updated, the major version is changed (eg frome v0.4 to v0.5).
+Whenever the library itself is updated, the minor version is changed (eg from
+v0.4.0 to v0.4.1); this may introduce breaking changes.
+
 Setup
 =====
 1. Install the `ppb-mutant` package through your preferred package management
