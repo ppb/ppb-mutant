@@ -110,6 +110,9 @@ class IndexScene(ppb.BaseScene):
 
     frame_happened = False
     
+    def on_pre_render(self, event, signal):
+        self.frame_happened = True
+
     def on_mouse_motion(self, mouse, signal):
         if not self.frame_happened:
             return
@@ -151,10 +154,6 @@ class IndexScene(ppb.BaseScene):
         print(dest - cam.position)
 
         cam.position = dest
-
-    last_frame = None
-    def on_pre_render(self, event, signal):
-        self.frame_happened = True
 
     def change(self):
         if self.next:
