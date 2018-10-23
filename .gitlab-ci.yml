@@ -1,0 +1,6 @@
+mypy:
+  image: python
+  script:
+    - pip install .
+    - pip install mypy
+    - mypy ppb_mutant
