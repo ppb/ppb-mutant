@@ -8,7 +8,7 @@ def readme():
 
 setup(
     name='ppb-mutant',
-    version='0.4.1',
+    version='0.4.2',
     packages=['ppb_mutant'],
     install_requires=[
         'ppb~=0.4.0',
