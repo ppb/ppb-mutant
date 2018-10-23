@@ -7,7 +7,7 @@ Constants:
 * TONES_HMN, TONES_PAW, TONES_CLW: Valid tone values for specific morphs
 * TONES_ALL: Valid tone values for all morphs
 """
-from typing import Iterable, Tuple, Optional
+from typing import Iterable, Tuple, Optional, Union, Type
 import ppb
 from ppb.flags import DoNotRender
 import os
@@ -113,8 +113,8 @@ class MutantSprite(ppb.BaseSprite):
     * tone: the tone to color with
     """
     morph: str = 'hmn'
-    tone: typing.Optional[str] = None
-    emoji: typing.Union[str, typing.Type[DoNotRender]] = 'no_entry'
+    tone: Optional[str] = None
+    emoji: Union[str, Type[DoNotRender]] = 'no_entry'
 
     _aliases = dict(load_aliases())
 
