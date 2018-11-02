@@ -29,5 +29,6 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Topic :: Games/Entertainment",
         "Topic :: Software Development :: Libraries",
-    ]
+    ],
+    zip_safe=False,
 )
