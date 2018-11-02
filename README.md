@@ -100,4 +100,4 @@ To compile them fresh:
 1. Run `./download_mutant.py`
 2. Run `./compile_mutant.py` (Takes a long time)
 3. Run `./mutant_json.py`
-3. Run `./download_zips.py`
+4. Run `./download_zips.py`
