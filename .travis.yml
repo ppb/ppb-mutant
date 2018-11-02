@@ -35,4 +35,4 @@ install:
   - pip install mypy;
   
 script:
-  - mypy ppb_mutant
+  - python -c "import ppb_mutant"
