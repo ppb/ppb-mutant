@@ -222,16 +222,16 @@ class SelectScene(ppb.BaseScene):
         right = self.main_camera.frame_right
 
         # TONES_HMN
-        yield self.build_sprite(emoji='color_modifier', tone='h1', pos=(left + 0.5, 0))
-        yield self.build_sprite(emoji='color_modifier', tone='h2', pos=(left + 1.5, 0))
-        yield self.build_sprite(emoji='color_modifier', tone='h3', pos=(left + 2.5, 0))
-        yield self.build_sprite(emoji='color_modifier', tone='h4', pos=(left + 3.5, 0))
-        yield self.build_sprite(emoji='color_modifier', tone='h5', pos=(left + 4.5, 0))
+        yield self.build_sprite(emoji='hand_hmn_{tone}', tone='h1', pos=(left + 0.5, 0))
+        yield self.build_sprite(emoji='hand_hmn_{tone}', tone='h2', pos=(left + 1.5, 0))
+        yield self.build_sprite(emoji='hand_hmn_{tone}', tone='h3', pos=(left + 2.5, 0))
+        yield self.build_sprite(emoji='hand_hmn_{tone}', tone='h4', pos=(left + 3.5, 0))
+        yield self.build_sprite(emoji='hand_hmn_{tone}', tone='h5', pos=(left + 4.5, 0))
 
+        # Default tone
         yield self.build_sprite(emoji='color_modifier', tone=None, pos=((left + 4.5 + right - 2.5) / 2, 0))
 
         # TONES_PAW
-        # FIXME: Use color_modifier when available for these tones
         yield self.build_sprite(emoji='hand_paw_{tone}', tone='fk1', pos=(right - 0.5, 0))
         yield self.build_sprite(emoji='hand_paw_{tone}', tone='ft1', pos=(right - 1.5, 0))
         yield self.build_sprite(emoji='hand_paw_{tone}', tone='fe1', pos=(right - 2.5, 0))
@@ -280,8 +280,14 @@ class SelectScene(ppb.BaseScene):
 
         for sprite in self.get(tag='tone'):
             if self._check_collision(sprite, mouse.position):
-                if is_valid_morph_tone(self.morph, sprite.tone):
-                    self.tone = sprite.tone
+                if not is_valid_morph_tone(self.morph, sprite.tone):
+                    if sprite.tone in TONES_PAW:
+                        self.morph = 'paw'
+                    elif sprite.tone in TONES_HMN:
+                        self.morph = 'hmn'
+                    elif sprite.tone in TONES_CLW:
+                        self.morph = 'clw'
+                self.tone = sprite.tone
                 return
 
     def do_update_morphtone(self):
