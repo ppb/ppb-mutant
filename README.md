@@ -14,8 +14,6 @@ Setup
 =====
 1. Install the `ppb-mutant` package through your preferred package management
    system. (pip, `requirements.txt`, pipenv, poetry, etc)
-2. Run `python -m ppb_mutant.download` in your project to download the Mutant
-   Standard assets (specifically, the 64px versions)
 
 
 Usage
@@ -89,3 +87,17 @@ Copyright Notice
 ================
 
 This library uses [Mutant Standard emoji](https://mutant.tech), which are licensed under a [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License](https://creativecommons.org/licenses/by-nc-sa/4.0/).
+
+
+Development
+===========
+The compiled assets are not part of git.
+
+If you just want a copy, pull them out of one of the PyPI packages and copy into
+`ppb_mutant/_assets`
+
+To compile them fresh:
+1. Run `./download_mutant.py`
+2. Run `./compile_mutant.py` (Takes a long time)
+3. Run `./mutant_json.py`
+3. Run `./download_zips.py`

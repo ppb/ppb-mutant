@@ -3,3 +3,8 @@ __pycache__/
 /build/
 /dist/
 /.mypy_cache/
+/mutant/
+/orxporter/
+/ppb_mutant/_assets/
+/struct.json
+/.tmp*.svg
