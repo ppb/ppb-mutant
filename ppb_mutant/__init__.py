@@ -68,7 +68,7 @@ def load_index():
 @functools.lru_cache()
 def load_aliases():
     """
-    Loads the aliases file, yielding (shortcode, original path, alias)
+    Loads the aliases file, yielding (alias, expansion)
     """
     fn = ASSETS_ROOT / 'aliases.txt'
     if not os.path.exists(fn):
