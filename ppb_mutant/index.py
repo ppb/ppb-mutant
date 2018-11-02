@@ -36,12 +36,9 @@ class EmojiSprite(MutantSprite, Region):
         if self.contains(mouse.position):
             print(self.emoji)
 
-    resource_path = pathlib.Path('.')
-
 
 class OpenMenuSprite(MutantSprite, Region):
     emoji = 'color_modifier'
-    resource_path = pathlib.Path('.')
 
     def on_button_pressed(self, mouse, signal):
         if self.contains(mouse.position) and mouse.button is ppb.buttons.Primary:
