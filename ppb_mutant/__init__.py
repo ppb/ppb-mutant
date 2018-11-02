@@ -7,7 +7,6 @@ Constants:
 * TONES_HMN, TONES_PAW, TONES_CLW: Valid tone values for specific morphs
 * TONES_ALL: Valid tone values for all morphs
 """
-from typing import Iterable, Tuple, Optional, Union, Type
 import ppb
 from ppb.flags import DoNotRender
 import os
@@ -45,7 +44,7 @@ TONES = TONES_ALL + TONES_HMN + TONES_PAW + TONES_CLW
 
 
 @functools.lru_cache()
-def load_index() -> Iterable[Tuple[str, str, Optional[str]]]:
+def load_index():
     """
     Loads the index file, yielding (shortcode, original path, alias)
     """
@@ -63,7 +62,7 @@ def load_index() -> Iterable[Tuple[str, str, Optional[str]]]:
 
 
 @functools.lru_cache()
-def load_aliases() -> Iterable[Tuple[str, str]]:
+def load_aliases():
     """
     Loads the aliases file, yielding (shortcode, original path, alias)
     """
@@ -108,18 +107,18 @@ class MutantSprite(ppb.BaseSprite):
     Morph and tone customization can be used via {}-format.
 
     Attributes (can be set at the class level):
-    * emoji: the emoji to render
+    * emoji: the emoji to render (or DoNotRender)
     * morph: the hand shape to use (hmn, paw, or clw)
     * tone: the tone to color with
     """
-    morph: str = 'hmn'
-    tone: Optional[str] = None
-    emoji: Union[str, Type[DoNotRender]] = 'no_entry'
+    morph = 'hmn'
+    tone = None
+    emoji = 'no_entry'
 
     _aliases = dict(load_aliases())
 
     @property
-    def image(self) -> str:
+    def image(self):
         if self.emoji is DoNotRender:
             return DoNotRender
         else:
