@@ -10,6 +10,7 @@ setup(
     name='ppb-mutant',
     version='0.4.2',
     packages=['ppb_mutant'],
+    package_data={'ppb_mutant': ['_assets/*.png', '_assets/*.txt']},
     install_requires=[
         'ppb~=0.4.0',
     ],
@@ -29,5 +30,6 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Topic :: Games/Entertainment",
         "Topic :: Software Development :: Libraries",
-    ]
+    ],
+    zip_safe=False,
 )

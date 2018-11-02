@@ -11,6 +11,7 @@ import ppb
 from ppb.flags import DoNotRender
 import os
 import functools
+import pathlib
 
 __all__ = 'MutantSprite', 'SelectScene',
 
@@ -43,15 +44,18 @@ TONES_CLW = []
 TONES = TONES_ALL + TONES_HMN + TONES_PAW + TONES_CLW
 
 
+ASSETS_ROOT = pathlib.Path(__file__).absolute().parent / '_assets'
+
 @functools.lru_cache()
 def load_index():
     """
     Loads the index file, yielding (shortcode, original path, alias)
     """
-    if not os.path.exists('mutant/index.txt'):
+    fn = ASSETS_ROOT / 'index.txt'
+    if not os.path.exists(fn):
         # Does not exist yet
         return
-    with open('mutant/index.txt', 'rt') as indexfile:
+    with open(fn, 'rt') as indexfile:
         for line in indexfile:
             line = line.rstrip('\n')
             if not line:
@@ -66,10 +70,11 @@ def load_aliases():
     """
     Loads the aliases file, yielding (shortcode, original path, alias)
     """
-    if not os.path.exists('mutant/aliases.txt'):
+    fn = ASSETS_ROOT / 'aliases.txt'
+    if not os.path.exists(fn):
         # Does not exist yet
         return
-    with open('mutant/aliases.txt', 'rt') as indexfile:
+    with open(fn, 'rt') as indexfile:
         for line in indexfile:
             line = line.strip()
             if not line:
@@ -117,8 +122,11 @@ class MutantSprite(ppb.BaseSprite):
 
     _aliases = dict(load_aliases())
 
+    resource_path = ASSETS_ROOT
+
     @property
     def image(self):
+        # print(self.emoji, self.morph, self.tone)
         if self.emoji is DoNotRender:
             return DoNotRender
         else:
@@ -126,7 +134,8 @@ class MutantSprite(ppb.BaseSprite):
             resolved = self._aliases.get(shortcode, shortcode)
             resolved = resolved.format(morph=self.morph, tone=self.tone or '')
             resolved = resolved.rstrip('_')
-            return 'mutant/{}.png'.format(resolved)
+            # print("\t", resolved)
+            return '{}.png'.format(resolved)
 
 
 def _frange(x, y, jump):
