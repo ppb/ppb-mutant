@@ -10,6 +10,7 @@ setup(
     name='ppb-mutant',
     version='0.4.2',
     packages=['ppb_mutant'],
+    package_data={'ppb_mutant': ['_assets/*.png', '_assets/*.txt']},
     install_requires=[
         'ppb~=0.4.0',
     ],
