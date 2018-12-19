@@ -97,14 +97,6 @@ class IndexScene(ppb.BaseScene):
             yield EmojiSprite(emoji=emoji, pos=pos)
         print(f"Loaded {len(emojis)} emoji")
 
-    def on_update(self, event, signal):
-        cam = self.main_camera
-        # https://github.com/ppb/pursuedpybear/issues/135
-        cam.frame_width = cam.viewport_width / cam.pixel_ratio
-        cam.frame_height = cam.viewport_height / cam.pixel_ratio
-        cam.half_width = cam.frame_width / 2
-        cam.half_height = cam.frame_height / 2
-
     frame_happened = False
     
     def on_pre_render(self, event, signal):
@@ -174,6 +166,7 @@ class CustomizeScene(SelectScene):
 
 
 if __name__ == '__main__':
-    ppb.run(IndexScene,
-        window_title='Mutant Standard Index',
+    ppb.run(
+        starting_scene=IndexScene,
+        # window_title='Mutant Standard Index',
     )
