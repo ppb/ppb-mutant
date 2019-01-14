@@ -12,6 +12,7 @@ class SelectDemoScene(SelectScene):
 
 
 if __name__ == '__main__':
-    ppb.run(SelectDemoScene,
-        window_title='Mutant Morph/Tone Picker',
+    ppb.run(
+        starting_scene=SelectDemoScene,
+        # window_title='Mutant Morph/Tone Picker',
     )
