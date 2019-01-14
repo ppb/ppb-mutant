@@ -30,7 +30,7 @@ for emoji in data:
     shortcode = emoji['code']
     src = pathlib.Path(emoji['src'])
 
-    path = src / (shortcode + '.png')
+    path = src.parent / (shortcode + '.png')
     if 'morph' in emoji:
         expansion = 2
     elif 'color' in emoji:
