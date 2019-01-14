@@ -22,7 +22,7 @@ Usage
 Demo
 ----
 
-A demo showing all emoji can be found by running `python -m ppb_mutant.download`.
+A demo showing all emoji can be found by running `python -m ppb_mutant.index`.
 
 
 `MutantSprite`
@@ -81,6 +81,8 @@ class CustomizeScene(SelectScene):
     def do_update_morphtone(self):
         print(self.morph, self.tone)
 ```
+
+For a demo, run `python -m ppb_mutant.picker`.
 
 
 Copyright Notice
