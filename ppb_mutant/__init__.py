@@ -46,6 +46,7 @@ TONES = TONES_ALL + TONES_HMN + TONES_PAW + TONES_CLW
 
 ASSETS_ROOT = pathlib.Path(__file__).absolute().parent / '_assets'
 
+
 @functools.lru_cache()
 def load_index():
     """
@@ -139,9 +140,14 @@ class MutantSprite(ppb.BaseSprite):
 
 
 def _frange(x, y, jump):
-  while x <= y:
-    yield x
-    x += jump
+    if jump > 0:
+        while x <= y:
+            yield x
+            x += jump
+    else:
+        while x >= y:
+            yield x
+            x += jump
 
 
 class SelectScene(ppb.BaseScene):
@@ -158,7 +164,7 @@ class SelectScene(ppb.BaseScene):
     """
     _morph = None
     _tone = None
-    
+
     class Sprite(MutantSprite):
         """
         The sprite to use in the menu
@@ -184,8 +190,8 @@ class SelectScene(ppb.BaseScene):
         self.morph = morph
         self.tone = tone
 
-        ymin = min(s.position.y - 0.5 for s in self)
-        ymax = max(s.position.y + 0.5 for s in self)
+        # ymin = min(s.bottom - 0.5 for s in self)
+        # ymax = max(s.top + 0.5 for s in self)
 
     def build_sprite(self, emoji, morph=None, tone=None, **kwargs):
         """
@@ -201,20 +207,22 @@ class SelectScene(ppb.BaseScene):
 
     def _get_samples(self):
         left = self.main_camera.frame_left
-        yield self.build_sprite(emoji='hand', pos=(left + 0.5, -1.5))
-        yield self.build_sprite(emoji='raising_hand', pos=(left + 1.5, -1.5))
+        yield self.build_sprite(emoji='hand', pos=(left + 0.5, 1.5))
+        yield self.build_sprite(emoji='raising_hand', pos=(left + 1.5, 1.5))
 
     def _get_morphs(self):
         right = self.main_camera.frame_right
-        yield self.build_sprite(emoji='hand', morph='clw', tone=None, pos=(right - 0.5, -1.5))
-        yield self.build_sprite(emoji='hand', morph='hmn', tone=None, pos=(right - 1.5, -1.5))
-        yield self.build_sprite(emoji='hand', morph='paw', tone=None, pos=(right - 2.5, -1.5))
+        yield self.build_sprite(emoji='hand', morph='clw', tone=None, pos=(right - 0.5, 1.5))
+        yield self.build_sprite(emoji='hand', morph='hmn', tone=None, pos=(right - 1.5, 1.5))
+        yield self.build_sprite(emoji='hand', morph='paw', tone=None, pos=(right - 2.5, 1.5))
 
     def _grid(self):
         cam = self.main_camera
-        
-        for y in _frange(1, int(cam.frame_height - 2) - 0.5, 1.0):
+
+        for y in _frange(-1, -int(cam.frame_height - 2) + 0.5, -1.0):
+            print(y)
             for x in _frange(int(cam.frame_left) + 0.5, int(cam.frame_right) - 0.5, 1.0):
+                print(x, y)
                 yield x, y
 
     def _get_tones(self):
