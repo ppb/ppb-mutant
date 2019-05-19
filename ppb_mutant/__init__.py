@@ -237,7 +237,7 @@ class SelectScene(ppb.BaseScene):
         yield self.build_sprite(emoji='hand_hmn_{tone}', tone='h5', pos=(left + 4.5, 0))
 
         # Default tone
-        yield self.build_sprite(emoji='color_modifier', tone=None, pos=((left + 4.5 + right - 2.5) / 2, 0))
+        yield self.build_sprite(emoji='cross', tone=None, pos=((left + 4.5 + right - 2.5) / 2, 0))
 
         # TONES_PAW
         yield self.build_sprite(emoji='hand_paw_{tone}', tone='fk1', pos=(right - 0.5, 0))
