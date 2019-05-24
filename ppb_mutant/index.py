@@ -21,7 +21,7 @@ class Region(ppb.BaseSprite):
         return (
             self.left <= pos.x <= self.right
             and
-            self.bottom >= pos.y >= self.top
+            self.bottom <= pos.y <= self.top
         )
 
 
@@ -40,7 +40,7 @@ class OpenMenuSprite(MutantSprite, Region):
 
     def on_button_pressed(self, mouse, signal):
         if self.contains(mouse.position) and mouse.button is ppb.buttons.Primary:
-            mouse.scene.next = CustomizeScene
+            signal(ppb.events.StartScene(CustomizeScene))
 
     def on_pre_render(self, event, signal):
         cam = event.scene.main_camera
@@ -152,7 +152,7 @@ class CustomizeScene(SelectScene):
 
         def on_button_pressed(self, mouse, signal):
             if self.contains(mouse.position) and mouse.button is ppb.buttons.Primary:
-                mouse.scene.running = False
+                signal(ppb.events.StopScene())
 
     def __init__(self, *p, **kw):
         super().__init__(*p, **kw)
