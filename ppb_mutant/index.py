@@ -3,11 +3,9 @@
 Show an index of available emoji
 """
 import ppb
-import os.path
 import math
 from ppb_mutant import MutantSprite, load_index, SelectScene
 import pathlib
-from time import perf_counter
 
 
 class Region(ppb.BaseSprite):
@@ -38,7 +36,7 @@ class EmojiSprite(MutantSprite, Region):
 
 
 class OpenMenuSprite(MutantSprite, Region):
-    emoji = 'color_modifier'
+    emoji = 'color_modifier_k1'
 
     def on_button_pressed(self, mouse, signal):
         if self.contains(mouse.position) and mouse.button is ppb.buttons.Primary:
@@ -46,7 +44,7 @@ class OpenMenuSprite(MutantSprite, Region):
 
     def on_pre_render(self, event, signal):
         cam = event.scene.main_camera
-        self.position = ppb.Vector(cam.frame_left + 0.5, cam.frame_top + 0.5)
+        self.position = ppb.Vector(cam.frame_left + 0.5, cam.frame_top - 0.5)
 
 
 class IndexScene(ppb.BaseScene):
@@ -58,10 +56,10 @@ class IndexScene(ppb.BaseScene):
 
         self.add(OpenMenuSprite())
 
-        self.xmin = min(s.position.x - 0.5 for s in self.get(tag='emoji'))
-        self.xmax = max(s.position.x + 0.5 for s in self.get(tag='emoji'))
-        self.ymin = min(s.position.y - 0.5  for s in self.get(tag='emoji'))
-        self.ymax = max(s.position.y + 0.5 for s in self.get(tag='emoji'))
+        self.xmin = min(s.left for s in self.get(tag='emoji'))
+        self.xmax = max(s.right for s in self.get(tag='emoji'))
+        self.ymin = min(s.bottom for s in self.get(tag='emoji'))
+        self.ymax = max(s.top for s in self.get(tag='emoji'))
 
         self.main_camera.position = ppb.Vector(
             (self.xmin + self.xmax) / 2,
@@ -98,7 +96,7 @@ class IndexScene(ppb.BaseScene):
         print(f"Loaded {len(emojis)} emoji")
 
     frame_happened = False
-    
+
     def on_pre_render(self, event, signal):
         self.frame_happened = True
 
@@ -121,7 +119,7 @@ class IndexScene(ppb.BaseScene):
         #     return
 
         xpercent = (x - frame_left) / frame_width
-        ypercent = (y - frame_top) / frame_height
+        ypercent = (y - frame_bottom) / frame_height
 
         if xpercent < 0: xpercent = 0
         if xpercent > 1: xpercent = 1
@@ -151,6 +149,7 @@ class CustomizeScene(SelectScene):
 
     class BackSprite(Region, Sprite):
         emoji = 'tick'
+
         def on_button_pressed(self, mouse, signal):
             if self.contains(mouse.position) and mouse.button is ppb.buttons.Primary:
                 mouse.scene.running = False
