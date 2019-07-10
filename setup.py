@@ -8,11 +8,11 @@ def readme():
 
 setup(
     name='ppb-mutant',
-    version='0.7.2',
+    version='0.8.0',
     packages=['ppb_mutant'],
     package_data={'ppb_mutant': ['_assets/*.png', '_assets/*.txt']},
     install_requires=[
-        'ppb~=0.5.0',
+        'ppb~=0.6.0',
     ],
     url='https://github.com/astronouth7303/ppb-mutant',
     license='Artistic-2.0',

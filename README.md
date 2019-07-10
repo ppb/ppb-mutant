@@ -3,7 +3,7 @@ ppb-mutant
 
 This library provides convenient support for the [Mutant Standard emoji](https://mutant.tech) for games using the [PursuedPyBear engine](https://github.com/ppb/pursuedpybear).
 
-This version is for PursuedPyBear v0.5 and Mutant Standard v0.4.0.
+This version is for PursuedPyBear v0.6 and Mutant Standard v0.4.0.
 
 
 Setup
@@ -28,7 +28,7 @@ You can replace the use of `image` in your sprites with `emoji` like so:
 
 ```python
 class SlimeSprite(ppb_mutant.MutantSprite):
-    emoji = 'people_animals/creatures/other/slime'
+    emoji = 'slime'
 ```
 
 In addition, the formatting syntax with the variables `morph` and `skin` may be
@@ -67,12 +67,12 @@ class CustomizeScene(SelectScene):
         emoji = 'tick'
         def on_button_pressed(self, mouse, signal):
             if self.contains(mouse.position) and mouse.button is ppb.buttons.Primary:
-                mouse.scene.running = False
+                signal(ppb.events.StopScene())
 
     def __init__(self, *p, **kw):
         super().__init__(*p, **kw)
         left = self.main_camera.frame_left
-        self.add(self.BackSprite(pos=(left + 2.5, -1.5)))
+        self.add(self.BackSprite(pos=(left + 2.5, 1.5)))
 
     def do_update_morphtone(self):
         print(self.morph, self.tone)
