@@ -273,7 +273,7 @@ class SelectScene(ppb.BaseScene):
         return (
             sprite.left <= point.x <= sprite.right
             and
-            sprite.bottom >= point.y >= sprite.top
+            sprite.bottom <= point.y <= sprite.top
         )
 
     def on_button_pressed(self, mouse, signal):
