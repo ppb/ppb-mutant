@@ -175,7 +175,7 @@ class SelectScene(ppb.BaseScene):
 
         self.main_camera.position = ppb.Vector(
             0,
-            self.main_camera.half_height - 2,
+            -self.main_camera.half_height + 2,
         )
 
         for s in self._get_samples():
@@ -220,9 +220,7 @@ class SelectScene(ppb.BaseScene):
         cam = self.main_camera
 
         for y in _frange(-1, -int(cam.frame_height - 2) + 0.5, -1.0):
-            print(y)
             for x in _frange(int(cam.frame_left) + 0.5, int(cam.frame_right) - 0.5, 1.0):
-                print(x, y)
                 yield x, y
 
     def _get_tones(self):
