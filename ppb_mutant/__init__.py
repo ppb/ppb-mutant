@@ -262,15 +262,15 @@ class SelectScene(ppb.BaseScene):
         The sprite to use in the menu
         """
 
-    def __init__(self, *p, morph='hmn', tone=None, **kw):
-        super().__init__(*p, **kw)
+    def __init__(self, *p, morph='hmn', tone=None, mtg=None, **kw):
+        if mtg is None:
+            mtg = MorphToneGroup(morph=morph, tone=tone)
+        super().__init__(*p, mtg=mtg, **kw)
 
         self.main_camera.position = ppb.Vector(
             0,
             -self.main_camera.half_height + 2,
         )
-
-        self._mtg = MorphToneGroup()
 
         for s in self._get_samples():
             self.add(s, tags=['sample'])
@@ -281,16 +281,13 @@ class SelectScene(ppb.BaseScene):
         for s in self._get_tones():
             self.add(s, tags=['tone'])
 
-        self.morph = morph
-        self.tone = tone
-
         # ymin = min(s.bottom - 0.5 for s in self)
         # ymax = max(s.top + 0.5 for s in self)
 
     def _get_samples(self):
         left = self.main_camera.frame_left
-        yield self.Sprite(image=self._mtg('hand'), pos=(left + 0.5, 1.5))
-        yield self.Sprite(image=self._mtg('raising_hand'), pos=(left + 1.5, 1.5))
+        yield self.Sprite(image=self.mtg('hand'), pos=(left + 0.5, 1.5))
+        yield self.Sprite(image=self.mtg('raising_hand'), pos=(left + 1.5, 1.5))
 
     def _get_morphs(self):
         right = self.main_camera.frame_right
@@ -331,20 +328,20 @@ class SelectScene(ppb.BaseScene):
 
     @property
     def morph(self):
-        return self._mtg.morph
+        return self.mtg.morph
 
     @morph.setter
     def morph(self, value):
-        self._mtg.morph = value
+        self.mtg.morph = value
         self.do_update_morphtone()
 
     @property
     def tone(self):
-        return self._mtg.tone
+        return self.mtg.tone
 
     @tone.setter
     def tone(self, value):
-        self._mtg.tone = value
+        self.mtg.tone = value
         self.do_update_morphtone()
 
     def _check_collision(self, sprite, point):
