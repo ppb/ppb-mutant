@@ -125,6 +125,9 @@ class Emoji(ppb.Image):
         resolved = 'ppb_mutant/_assets/{}.png'.format(resolved)
         super().__init__(resolved)
 
+    def __repr__(self):
+        return f"<{type(self).__name__} shortcode={self.shortcode!r} morph={self.morph!r} tone={self.tone!r} name={self.name!r}>"
+
 
 class MorphToneProxy:
     """
@@ -138,6 +141,9 @@ class MorphToneProxy:
         self.shortcode = shortcode
         self._group = group
         self._reload()
+
+    def __repr__(self):
+        return f"<{type(self).__name__} shortcode={self.shortcode!r} group={self._group!r}>"
 
     @property
     def morph(self):
