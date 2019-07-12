@@ -11,6 +11,7 @@ import ppb
 from ppb.flags import DoNotRender
 import weakref
 import logging
+import functools
 
 __all__ = (
     'Emoji', 'MorphToneGroup', 'SelectScene',
@@ -49,52 +50,44 @@ TONES_CLW = []
 TONES = TONES_ALL + TONES_HMN + TONES_PAW + TONES_CLW
 
 
-class IndexAsset(ppb.assets.Asset):
-    def background_parse(self, data):
-        rv = []
-        for line in data.decode('utf-8').split('\n'):
-            if not line:
-                continue
-            bits = line.split('\t')
-            code, path, alias = bits
-            rv.append((code, path, alias or None))
-        return rv
-
-    def missing_file(self):
-        return []
-
-
-class AliasAsset(ppb.assets.Asset):
-    def background_parse(self, data):
-        rv = {}
-        for line in data.decode('utf-8').split('\n'):
-            if not line:
-                continue
-            bits = line.split('\t')
-            alias, expansion = bits
-            rv[alias] = expansion
-        return rv
-
-    def missing_file(self):
-        return {}
-
-
-_index = IndexAsset('ppb_mutant/_assets/index.txt')
-_alias = AliasAsset('ppb_mutant/_assets/aliases.txt')
-
-
+@functools.lru_cache()
 def load_index():
     """
     Loads the index file, yielding (shortcode, original path, alias)
     """
-    return _index.load()
+    rv = []
+    try:
+        with ppb.vfs.open('ppb_mutant/_assets/index.txt', encoding='utf-8') as indexfile:
+            for line in indexfile:
+                line = line.rstrip('\n')
+                if not line:
+                    continue
+                bits = line.split('\t')
+                code, path, alias = bits
+                rv.append((code, path, alias or None))
+    except FileNotFoundError:
+        pass
+    return rv
 
 
+@functools.lru_cache()
 def load_aliases():
     """
     Loads the aliases file, yielding (alias, expansion)
     """
-    return _alias.load()
+    rv = {}
+    try:
+        with ppb.vfs.open('ppb_mutant/_assets/aliases.txt', encoding='utf-8') as indexfile:
+            for line in indexfile:
+                line = line.strip()
+                if not line:
+                    continue
+                bits = line.split('\t')
+                alias, expansion = bits
+                rv[alias] = expansion
+    except FileNotFoundError:
+        pass
+    return rv
 
 
 def is_valid_morph_tone(morph, tone):
