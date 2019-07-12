@@ -217,7 +217,7 @@ class MutantSprite(ppb.BaseSprite):
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
-        logger.warn("MutantSprite is deprecated. Use the Emoji or MorphToneGroup instead.")
+        logger.warn("MutantSprite is deprecated. Use the Emoji or MorphToneGroup instead (in %s)", cls.__name__)
 
     @property
     def image(self):
