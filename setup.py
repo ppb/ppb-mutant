@@ -14,7 +14,7 @@ setup(
     install_requires=[
         'ppb~=0.6.0',
     ],
-    url='https://github.com/astronouth7303/ppb-mutant',
+    url='https://github.com/ppb/ppb-mutant',
     license='Artistic-2.0',
     author='Jamie Bliss',
     author_email='jamie@ivyleav.es',
