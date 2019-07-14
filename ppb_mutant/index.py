@@ -4,8 +4,7 @@ Show an index of available emoji
 """
 import ppb
 import math
-from ppb_mutant import MutantSprite, load_index, SelectScene
-import pathlib
+from ppb_mutant import Emoji, MorphToneGroup, load_index, SelectScene
 
 
 class Region(ppb.BaseSprite):
@@ -25,22 +24,23 @@ class Region(ppb.BaseSprite):
         )
 
 
-class EmojiSprite(MutantSprite, Region):
-    def __init__(self, *p, emoji, **kw):
+class EmojiSprite(Region, ppb.BaseSprite):
+    def __init__(self, *p, **kw):
         super().__init__(*p, **kw)
-        self.emoji = emoji
 
     def on_button_pressed(self, mouse, signal):
         if self.contains(mouse.position):
-            print(self.emoji)
+            print(self.image.shortcode)
 
 
-class OpenMenuSprite(MutantSprite, Region):
-    emoji = 'color_modifier_k1'
+class OpenMenuSprite(Region, ppb.BaseSprite):
+    image = Emoji('color_modifier', tone='k1')
 
     def on_button_pressed(self, mouse, signal):
         if self.contains(mouse.position) and mouse.button is ppb.buttons.Primary:
-            signal(ppb.events.StartScene(CustomizeScene))
+            signal(ppb.events.StartScene(
+                CustomizeScene(mtg=mouse.scene._mtg)
+            ))
 
     def on_pre_render(self, event, signal):
         cam = event.scene.main_camera
@@ -50,6 +50,8 @@ class OpenMenuSprite(MutantSprite, Region):
 class IndexScene(ppb.BaseScene):
     def __init__(self, *p, **kw):
         super().__init__(*p, pixel_ratio=64, **kw)
+
+        self._mtg = MorphToneGroup()
 
         for s in self.get_options():
             self.add(s, tags=['emoji'])
@@ -65,11 +67,6 @@ class IndexScene(ppb.BaseScene):
             (self.xmin + self.xmax) / 2,
             (self.ymin + self.ymax) / 2,
         )
-
-    def _load_index(self):
-        with open('mutant/index.txt', 'rt') as indexfile:
-            for line in indexfile:
-                yield line.strip()
 
     def grid(self, rows, cols, *, scale=1.0):
         for y in range(rows):
@@ -92,7 +89,7 @@ class IndexScene(ppb.BaseScene):
         cols = math.floor(math.sqrt(len(emojis)))
         rows = math.ceil(len(emojis) / cols)
         for emoji, pos in zip(emojis, self.grid(rows, cols, scale=1.1)):
-            yield EmojiSprite(emoji=emoji, pos=pos)
+            yield EmojiSprite(image=self._mtg(emoji), pos=pos)
         print(f"Loaded {len(emojis)} emoji")
 
     frame_happened = False
@@ -131,24 +128,10 @@ class IndexScene(ppb.BaseScene):
             (self.ymax - self.ymin) * ypercent + self.ymin,
         )
 
-    def change(self):
-        if self.next:
-            n = {
-                'scene_class': self.next,
-                'kwargs': {'morph': EmojiSprite.morph, 'tone': EmojiSprite.tone},
-            }
-        else:
-            n = {'scene_class': None}
-        self.next = None
-        return self.running, n
-
 
 class CustomizeScene(SelectScene):
-    class Sprite(SelectScene.Sprite):
-        resource_path = pathlib.Path('.')
-
-    class BackSprite(Region, Sprite):
-        emoji = 'tick'
+    class BackSprite(Region, SelectScene.Sprite):
+        image = Emoji('tick')
 
         def on_button_pressed(self, mouse, signal):
             if self.contains(mouse.position) and mouse.button is ppb.buttons.Primary:
@@ -156,16 +139,13 @@ class CustomizeScene(SelectScene):
 
     def __init__(self, *p, **kw):
         super().__init__(*p, **kw)
-        left = self.main_camera.frame_left
-        self.add(self.BackSprite(pos=(left + 2.5, -1.5)))
-
-    def do_update_morphtone(self):
-        EmojiSprite.morph = self.morph
-        EmojiSprite.tone = self.tone
+        self.add(self.BackSprite(
+            pos=ppb.Vector(0, self.main_camera.frame_top - 0.5)
+        ))
 
 
 if __name__ == '__main__':
     ppb.run(
         starting_scene=IndexScene,
-        # window_title='Mutant Standard Index',
+        title='Mutant Standard Index',
     )

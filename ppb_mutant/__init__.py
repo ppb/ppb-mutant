@@ -9,11 +9,15 @@ Constants:
 """
 import ppb
 from ppb.flags import DoNotRender
-import os
+import weakref
+import logging
 import functools
-import pathlib
 
-__all__ = 'MutantSprite', 'SelectScene',
+__all__ = (
+    'Emoji', 'MorphToneGroup', 'SelectScene',
+    # Deprecated
+    'MutantSprite',
+)
 
 # The BY-NC-SA license requires software display this notice. Let's just do it
 # for them.
@@ -24,6 +28,8 @@ print(
     "International License (https://creativecommons.org/licenses/by-nc-sa/4.0/)."
     "\n"
 )
+
+logger = logging.getLogger(__name__)
 
 
 MORPHS = ['hmn', 'paw', 'clw']
@@ -44,26 +50,24 @@ TONES_CLW = []
 TONES = TONES_ALL + TONES_HMN + TONES_PAW + TONES_CLW
 
 
-ASSETS_ROOT = pathlib.Path(__file__).absolute().parent / '_assets'
-
-
 @functools.lru_cache()
 def load_index():
     """
     Loads the index file, yielding (shortcode, original path, alias)
     """
-    fn = ASSETS_ROOT / 'index.txt'
-    if not os.path.exists(fn):
-        # Does not exist yet
-        return
-    with open(fn, 'rt') as indexfile:
-        for line in indexfile:
-            line = line.rstrip('\n')
-            if not line:
-                continue
-            bits = line.split('\t')
-            code, path, alias = bits
-            yield code, path, alias or None
+    rv = []
+    try:
+        with ppb.vfs.open('ppb_mutant/_assets/index.txt', encoding='utf-8') as indexfile:
+            for line in indexfile:
+                line = line.rstrip('\n')
+                if not line:
+                    continue
+                bits = line.split('\t')
+                code, path, alias = bits
+                rv.append((code, path, alias or None))
+    except FileNotFoundError:
+        pass
+    return rv
 
 
 @functools.lru_cache()
@@ -71,18 +75,19 @@ def load_aliases():
     """
     Loads the aliases file, yielding (alias, expansion)
     """
-    fn = ASSETS_ROOT / 'aliases.txt'
-    if not os.path.exists(fn):
-        # Does not exist yet
-        return
-    with open(fn, 'rt') as indexfile:
-        for line in indexfile:
-            line = line.strip()
-            if not line:
-                continue
-            bits = line.split('\t')
-            alias, expansion = bits
-            yield alias, expansion
+    rv = {}
+    try:
+        with ppb.vfs.open('ppb_mutant/_assets/aliases.txt', encoding='utf-8') as indexfile:
+            for line in indexfile:
+                line = line.strip()
+                if not line:
+                    continue
+                bits = line.split('\t')
+                alias, expansion = bits
+                rv[alias] = expansion
+    except FileNotFoundError:
+        pass
+    return rv
 
 
 def is_valid_morph_tone(morph, tone):
@@ -105,25 +110,120 @@ def is_valid_morph_tone(morph, tone):
     return False
 
 
+class Emoji(ppb.Image):
+
+    def __init__(self, shortcode, *, morph='hmn', tone=None):
+        self.shortcode = shortcode
+        self.morph = morph
+        self.tone = tone
+
+        aliases = load_aliases()
+
+        resolved = aliases.get(shortcode, shortcode)
+        resolved = resolved.format(morph=morph, tone=tone or '')
+        resolved = resolved.rstrip('_')
+        resolved = 'ppb_mutant/_assets/{}.png'.format(resolved)
+        super().__init__(resolved)
+
+    def __repr__(self):
+        return f"<{type(self).__name__} shortcode={self.shortcode!r} morph={self.morph!r} tone={self.tone!r} name={self.name!r}>"
+
+
+class MorphToneProxy:
+    """
+    A proxy for Emoji used with MorphToneGroup.
+
+    Use MorphToneGroup to construct.
+    """
+    _image = None
+
+    def __init__(self, shortcode, group):
+        self.shortcode = shortcode
+        self._group = group
+        self._reload()
+
+    def __repr__(self):
+        return f"<{type(self).__name__} shortcode={self.shortcode!r} group={self._group!r}>"
+
+    @property
+    def morph(self):
+        return self._group.morph
+
+    @property
+    def tone(self):
+        return self._group.tone
+
+    def _reload(self):
+        self._image = Emoji(self.shortcode, morph=self.morph, tone=self.tone)
+
+    def load(self):
+        if self._image is None:
+            self._reload()
+        return self._image.load()
+
+
+class MorphToneGroup:
+    """
+    A group of emoji that share a changable morph/tone.
+    """
+    def __init__(self, *, morph='hmn', tone=None):
+        self._emoji = weakref.WeakValueDictionary()
+        self._morph = morph
+        self._tone = tone
+
+    @property
+    def morph(self):
+        return self._morph
+
+    @morph.setter
+    def morph(self, value):
+        self._morph = value
+        self._reload()
+
+    @property
+    def tone(self):
+        return self._tone
+
+    @tone.setter
+    def tone(self, value):
+        self._tone = value
+        self._reload()
+
+    def set_morphtone(self, morph, tone):
+        self._morph = morph
+        self._tone = tone
+        self._reload()
+
+    def _reload(self):
+        for emoji in list(self._emoji.values()):
+            emoji._reload()
+
+    def __call__(self, shortcode):
+        """
+        Get an emoji asset
+        """
+        # We do things in this particular way to avoid race conditions around the gc
+        try:
+            return self._emoji[shortcode]
+        except KeyError:
+            e = MorphToneProxy(shortcode, self)
+            self._emoji[shortcode] = e
+            return e
+
+
 class MutantSprite(ppb.BaseSprite):
     """
-    Replaces a Sprite's image with emoji, which is pulled from the Mutant
-    Standard emoji.
-
-    Morph and tone customization can be used via {}-format.
-
-    Attributes (can be set at the class level):
-    * emoji: the emoji to render (or DoNotRender)
-    * morph: the hand shape to use (hmn, paw, or clw)
-    * tone: the tone to color with
+    Deprecated
     """
     morph = 'hmn'
     tone = None
     emoji = 'no_entry'
 
-    _aliases = dict(load_aliases())
+    _image = None
 
-    resource_path = ASSETS_ROOT
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        logger.warn("MutantSprite is deprecated. Use the Emoji or MorphToneGroup instead (in %s)", cls.__name__)
 
     @property
     def image(self):
@@ -131,12 +231,13 @@ class MutantSprite(ppb.BaseSprite):
         if self.emoji is DoNotRender:
             return DoNotRender
         else:
-            shortcode = os.path.basename(self.emoji)  # Transitional
-            resolved = self._aliases.get(shortcode, shortcode)
-            resolved = resolved.format(morph=self.morph, tone=self.tone or '')
-            resolved = resolved.rstrip('_')
-            # print("\t", resolved)
-            return '{}.png'.format(resolved)
+            if self._image is None or (
+                self._image.shortcode != self.emoji or
+                self._image.morph != self.morph or
+                self._image.tone != self.tone
+            ):
+                self._image = Emoji(self.emoji, morph=self.morph, tone=self.tone)
+            return self._image
 
 
 def _frange(x, y, jump):
@@ -162,16 +263,15 @@ class SelectScene(ppb.BaseScene):
 
     SelectScene.Sprite can be overriden to change the sprite.
     """
-    _morph = None
-    _tone = None
-
-    class Sprite(MutantSprite):
+    class Sprite(ppb.BaseSprite):
         """
         The sprite to use in the menu
         """
 
-    def __init__(self, *p, morph='hmn', tone=None, **kw):
-        super().__init__(*p, **kw)
+    def __init__(self, *p, morph='hmn', tone=None, mtg=None, **kw):
+        if mtg is None:
+            mtg = MorphToneGroup(morph=morph, tone=tone)
+        super().__init__(*p, mtg=mtg, **kw)
 
         self.main_camera.position = ppb.Vector(
             0,
@@ -187,34 +287,19 @@ class SelectScene(ppb.BaseScene):
         for s in self._get_tones():
             self.add(s, tags=['tone'])
 
-        self.morph = morph
-        self.tone = tone
-
         # ymin = min(s.bottom - 0.5 for s in self)
         # ymax = max(s.top + 0.5 for s in self)
 
-    def build_sprite(self, emoji, morph=None, tone=None, **kwargs):
-        """
-        Instantiates the sprite, with the given emoji, morph, tone, and args.
-        """
-        sprite = self.Sprite(**kwargs)
-        sprite.emoji = emoji
-        if morph:
-            sprite.morph = morph
-        if tone:
-            sprite.tone = tone
-        return sprite
-
     def _get_samples(self):
         left = self.main_camera.frame_left
-        yield self.build_sprite(emoji='hand', pos=(left + 0.5, 1.5))
-        yield self.build_sprite(emoji='raising_hand', pos=(left + 1.5, 1.5))
+        yield self.Sprite(image=self.mtg('hand'), pos=(left + 0.5, 1.5))
+        yield self.Sprite(image=self.mtg('raising_hand'), pos=(left + 1.5, 1.5))
 
     def _get_morphs(self):
         right = self.main_camera.frame_right
-        yield self.build_sprite(emoji='hand', morph='clw', tone=None, pos=(right - 0.5, 1.5))
-        yield self.build_sprite(emoji='hand', morph='hmn', tone=None, pos=(right - 1.5, 1.5))
-        yield self.build_sprite(emoji='hand', morph='paw', tone=None, pos=(right - 2.5, 1.5))
+        yield self.Sprite(image=Emoji('hand', morph='clw', tone=None), pos=(right - 0.5, 1.5))
+        yield self.Sprite(image=Emoji('hand', morph='hmn', tone=None), pos=(right - 1.5, 1.5))
+        yield self.Sprite(image=Emoji('hand', morph='paw', tone=None), pos=(right - 2.5, 1.5))
 
     def _grid(self):
         cam = self.main_camera
@@ -228,45 +313,41 @@ class SelectScene(ppb.BaseScene):
         right = self.main_camera.frame_right
 
         # TONES_HMN
-        yield self.build_sprite(emoji='hand_hmn_{tone}', tone='h1', pos=(left + 0.5, 0))
-        yield self.build_sprite(emoji='hand_hmn_{tone}', tone='h2', pos=(left + 1.5, 0))
-        yield self.build_sprite(emoji='hand_hmn_{tone}', tone='h3', pos=(left + 2.5, 0))
-        yield self.build_sprite(emoji='hand_hmn_{tone}', tone='h4', pos=(left + 3.5, 0))
-        yield self.build_sprite(emoji='hand_hmn_{tone}', tone='h5', pos=(left + 4.5, 0))
+        yield self.Sprite(image=Emoji('hand', morph='hmn', tone='h1'), pos=(left + 0.5, 0))
+        yield self.Sprite(image=Emoji('hand', morph='hmn', tone='h2'), pos=(left + 1.5, 0))
+        yield self.Sprite(image=Emoji('hand', morph='hmn', tone='h3'), pos=(left + 2.5, 0))
+        yield self.Sprite(image=Emoji('hand', morph='hmn', tone='h4'), pos=(left + 3.5, 0))
+        yield self.Sprite(image=Emoji('hand', morph='hmn', tone='h5'), pos=(left + 4.5, 0))
 
         # Default tone
-        yield self.build_sprite(emoji='cross', tone=None, pos=((left + 4.5 + right - 2.5) / 2, 0))
+        yield self.Sprite(image=Emoji('cross'), pos=((left + 4.5 + right - 2.5) / 2, 0))
 
         # TONES_PAW
-        yield self.build_sprite(emoji='hand_paw_{tone}', tone='fk1', pos=(right - 0.5, 0))
-        yield self.build_sprite(emoji='hand_paw_{tone}', tone='ft1', pos=(right - 1.5, 0))
-        yield self.build_sprite(emoji='hand_paw_{tone}', tone='fe1', pos=(right - 2.5, 0))
+        yield self.Sprite(image=Emoji('hand', morph='paw', tone='fk1'), pos=(right - 0.5, 0))
+        yield self.Sprite(image=Emoji('hand', morph='paw', tone='ft1'), pos=(right - 1.5, 0))
+        yield self.Sprite(image=Emoji('hand', morph='paw', tone='fe1'), pos=(right - 2.5, 0))
 
         # TONES_ALL
         tones = (t for t in TONES_ALL if t is not None)
         for tone, pos in zip(tones, self._grid()):
-            yield self.build_sprite(emoji='color_modifier', tone=tone, pos=pos)
+            yield self.Sprite(image=Emoji('color_modifier', tone=tone), pos=pos)
 
     @property
     def morph(self):
-        return self._morph
+        return self.mtg.morph
 
     @morph.setter
     def morph(self, value):
-        self._morph = value
-        for s in self.get(tag='sample'):
-            s.morph = value
+        self.mtg.morph = value
         self.do_update_morphtone()
 
     @property
     def tone(self):
-        return self._tone
+        return self.mtg.tone
 
     @tone.setter
     def tone(self, value):
-        self._tone = value
-        for s in self.get(tag='sample'):
-            s.tone = value
+        self.mtg.tone = value
         self.do_update_morphtone()
 
     def _check_collision(self, sprite, point):
@@ -279,21 +360,21 @@ class SelectScene(ppb.BaseScene):
     def on_button_pressed(self, mouse, signal):
         for sprite in self.get(tag='morph'):
             if self._check_collision(sprite, mouse.position):
-                if not is_valid_morph_tone(sprite.morph, self.tone):
+                if not is_valid_morph_tone(sprite.image.morph, self.tone):
                     self.tone = None
-                self.morph = sprite.morph
+                self.morph = sprite.image.morph
                 return
 
         for sprite in self.get(tag='tone'):
             if self._check_collision(sprite, mouse.position):
-                if not is_valid_morph_tone(self.morph, sprite.tone):
-                    if sprite.tone in TONES_PAW:
+                if not is_valid_morph_tone(self.morph, sprite.image.tone):
+                    if sprite.image.tone in TONES_PAW:
                         self.morph = 'paw'
-                    elif sprite.tone in TONES_HMN:
+                    elif sprite.image.tone in TONES_HMN:
                         self.morph = 'hmn'
-                    elif sprite.tone in TONES_CLW:
+                    elif sprite.image.tone in TONES_CLW:
                         self.morph = 'clw'
-                self.tone = sprite.tone
+                self.tone = sprite.image.tone
                 return
 
     def do_update_morphtone(self):
