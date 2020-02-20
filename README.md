@@ -21,24 +21,22 @@ Demo
 A demo showing all emoji can be found by running `python -m ppb_mutant.index`.
 
 
-`MutantSprite`
---------------
+`Emoji`
+-------
 
-You can replace the use of `image` in your sprites with `emoji` like so:
+You can replace the use of `image` with an `Emoji` asset:
 
 ```python
-class SlimeSprite(ppb_mutant.MutantSprite):
-    emoji = 'slime'
+class SlimeSprite(ppb.Sprite):
+    image = ppb_mutant.Emoji('slime')
 ```
 
 In addition, the formatting syntax with the variables `morph` and `skin` may be
 used for Mutant's customization features:
 
 ```python
-class PunchRightSprite(ppb_mutant.MutantSprite):
-    emoji = 'fist_facing_right_{morph}_{skin}'
-    morph = 'clw'
-    tone = 'r2'  # "colour"
+class PunchRightSprite(ppb.Sprite):
+    image = ppb_mutant.Emoji('fist_facing_right_{morph}_{skin}', morph='clw', tone='r2')
 ```
 
 See the [modifier guide](https://mutant.tech/reference/0.3.0/mutstd_modifier_guide_0.3.0.png) for details on these.
@@ -46,10 +44,25 @@ See the [modifier guide](https://mutant.tech/reference/0.3.0/mutstd_modifier_gui
 Alternatively, most customizable emoji also have aliases defined:
 
 ```python
-class PunchRightSprite(ppb_mutant.MutantSprite):
-    emoji = 'fist_facing_right'
-    morph = 'clw'
-    tone = 'r2'  # "colour"
+class PunchRightSprite(ppb.Sprite):
+    image = ppb_mutant.Emoji('fist_facing_right', morph='clw', tone='r2')
+```
+
+`MorphToneGroup`
+----------------
+
+If you want to change the morph/tone of a bunch of emoji as a group, use the `MorphToneGroup`:
+
+```python
+player_emoji = ppb_mutant.MorphToneGroup(morph='paw', tone='g1')
+
+
+class HandSprite(ppb.Sprite):
+    image = player_emoji('hand')
+
+
+class ProfileSprite(ppb.Sprite):
+    image = player_emoji('adult')
 ```
 
 
@@ -60,10 +73,10 @@ class PunchRightSprite(ppb_mutant.MutantSprite):
 (color) customization. It can be used like:
 
 ```python
-class CustomizeScene(SelectScene):
-    class Sprite(SelectScene.Sprite): pass
+class CustomizeScene(ppb_mutant.SelectScene):
+    class Sprite(ppb_mutant.SelectScene.Sprite): pass
 
-    class BackSprite(Region, Sprite):
+    class BackSprite(Region, ppb_mutant.Sprite):
         emoji = 'tick'
         def on_button_pressed(self, mouse, signal):
             if self.contains(mouse.position) and mouse.button is ppb.buttons.Primary:
