@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-rm -r ppb_mutant/_assets/*
+rm -rf ppb_mutant/_assets/*
 
 python3 ./download_mutant.py
 python3 ./compile_mutant.py
