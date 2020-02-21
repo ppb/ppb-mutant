@@ -27,7 +27,7 @@ aliases = AliasCompiler()
 # }
 
 for emoji in data:
-    shortcode = emoji['code']
+    shortcode = emoji['short']
     src = pathlib.Path(emoji['src'])
 
     path = src.parent / (shortcode + '.png')
