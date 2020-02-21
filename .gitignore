@@ -8,3 +8,4 @@ __pycache__/
 /ppb_mutant/_assets/
 /struct.json
 /.tmp*.svg
+/pip-wheel-metadata/

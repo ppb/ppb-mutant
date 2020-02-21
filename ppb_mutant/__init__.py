@@ -110,20 +110,25 @@ def is_valid_morph_tone(morph, tone):
     return False
 
 
+def _resolve_name(shortcode, morph, tone):
+    aliases = load_aliases()
+
+    resolved = aliases.get(shortcode, shortcode)
+    resolved = resolved.format(morph=morph, tone=tone or '')
+    resolved = resolved.rstrip('_')
+    return 'ppb_mutant/_assets/{}.png'.format(resolved)
+
+
 class Emoji(ppb.Image):
+    def __new__(cls, shortcode, *, morph='hmn', tone=None):
+        return super().__new__(cls, _resolve_name(shortcode, morph, tone))
 
     def __init__(self, shortcode, *, morph='hmn', tone=None):
         self.shortcode = shortcode
         self.morph = morph
         self.tone = tone
 
-        aliases = load_aliases()
-
-        resolved = aliases.get(shortcode, shortcode)
-        resolved = resolved.format(morph=morph, tone=tone or '')
-        resolved = resolved.rstrip('_')
-        resolved = 'ppb_mutant/_assets/{}.png'.format(resolved)
-        super().__init__(resolved)
+        super().__init__(_resolve_name(self.shortcode, self.morph, self.tone))
 
     def __repr__(self):
         return f"<{type(self).__name__} shortcode={self.shortcode!r} morph={self.morph!r} tone={self.tone!r} name={self.name!r}>"
