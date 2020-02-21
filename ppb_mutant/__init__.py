@@ -236,12 +236,13 @@ class MutantSprite(ppb.BaseSprite):
         if self.emoji is DoNotRender:
             return DoNotRender
         else:
+            emoji = self.emoji.rsplit('/', 1)[-1]
             if self._image is None or (
-                self._image.shortcode != self.emoji or
+                self._image.shortcode != emoji or
                 self._image.morph != self.morph or
                 self._image.tone != self.tone
             ):
-                self._image = Emoji(self.emoji, morph=self.morph, tone=self.tone)
+                self._image = Emoji(emoji, morph=self.morph, tone=self.tone)
             return self._image
 
 
