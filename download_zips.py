@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import os
-import sys
 import urllib.request
 import zipfile
 import io
@@ -12,8 +11,9 @@ import contextlib
 from ppb_mutant import MORPHS, TONES
 
 DOWNLOADS = [
-    ('https://mutant.tech/dl/vip/mutstd_vip_2018.04_all.zip', 'mutstd_vip_2018.04_all/emoji/png-64px/'),
-    # ('https://mutant.tech/dl/special/mutstd_special_s1_all.zip', 'mutstd_special_s1_all/emoji/png-64px/'),
+    ('https://mutant.tech/dl/2020.02/mtnt_2020.02_short_png128.zip', 'mtnt_2020.02_short_png128/emoji/'),
+    ('https://mutant.tech/dl/vip/mutstd_vip_2018.04_all.zip', 'mutstd_vip_2018.04_all/emoji/png-128px/'),
+    ('https://mutant.tech/dl/special/mtnt_special_s3.zip', 'mtnt_special_s3/emoji/png-128/'),
 ]
 
 
@@ -29,8 +29,7 @@ def enter_dir(dest):
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description=
-            'Download the Mutant Standard emoji to the source directory.',
+        description='Download the Mutant Standard emoji to the source directory.',
     )
 
     return parser.parse_args()
@@ -40,7 +39,9 @@ def open_zip(url):
     with urllib.request.urlopen(url) as resp:
         return io.BytesIO(resp.read())
 
+
 real_tones = [t for t in TONES if t is not None]
+
 
 class AliasCompiler:
     MORPHTONE = re.compile(f"^(.*)_({'|'.join(MORPHS)})_({'|'.join(real_tones)})$")

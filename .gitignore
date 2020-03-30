@@ -3,8 +3,6 @@ __pycache__/
 /build/
 /dist/
 /.mypy_cache/
-/mutant/
-/orxporter/
 /ppb_mutant/_assets/*.png
 /ppb_mutant/_assets/*.txt
 !/ppb_mutant/_assets/__init__.py
