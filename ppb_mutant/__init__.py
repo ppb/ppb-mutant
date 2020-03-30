@@ -350,6 +350,9 @@ class SelectScene(ppb.BaseScene):
 
     @property
     def morph(self):
+        """
+        The currently selected morph
+        """
         return self.mtg.morph
 
     @morph.setter
@@ -359,6 +362,9 @@ class SelectScene(ppb.BaseScene):
 
     @property
     def tone(self):
+        """
+        The currently selected tone
+        """
         return self.mtg.tone
 
     @tone.setter
