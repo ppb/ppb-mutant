@@ -32,7 +32,7 @@ print(
 logger = logging.getLogger(__name__)
 
 
-MORPHS = ['hmn', 'paw', 'clw']
+MORPHS = ['hmn', 'paw', 'clw', 'hoof']
 
 TONES_ALL = [
     None,
@@ -46,8 +46,9 @@ TONES_ALL = [
 TONES_HMN = ['h1', 'h2', 'h3', 'h4', 'h5']
 TONES_PAW = ['fk1', 'ft1', 'fe1']
 TONES_CLW = []
+TONES_HOOF = []
 
-TONES = TONES_ALL + TONES_HMN + TONES_PAW + TONES_CLW
+TONES = TONES_ALL + TONES_HMN + TONES_PAW + TONES_CLW + TONES_HOOF
 
 
 @functools.lru_cache()
@@ -104,6 +105,8 @@ def is_valid_morph_tone(morph, tone):
     if morph == 'paw' and tone in TONES_PAW:
         return True
     if morph == 'clw' and tone in TONES_CLW:
+        return True
+    if morph == 'hoof' and tone in TONES_HOOF:
         return True
 
     # Fall through
@@ -306,6 +309,7 @@ class SelectScene(ppb.BaseScene):
         yield self.Sprite(image=Emoji('hand', morph='clw', tone=None), pos=(right - 0.5, 1.5))
         yield self.Sprite(image=Emoji('hand', morph='hmn', tone=None), pos=(right - 1.5, 1.5))
         yield self.Sprite(image=Emoji('hand', morph='paw', tone=None), pos=(right - 2.5, 1.5))
+        yield self.Sprite(image=Emoji('hand', morph='hoof', tone=None), pos=(right - 3.5, 1.5))
 
     def _grid(self):
         cam = self.main_camera
