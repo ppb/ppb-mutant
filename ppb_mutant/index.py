@@ -3,8 +3,23 @@
 Show an index of available emoji
 """
 import ppb
+from ppb.features.loadingscene import BaseLoadingScene
 import math
 from ppb_mutant import Emoji, MorphToneGroup, load_index, SelectScene
+
+
+class LoadingScene(BaseLoadingScene):
+    background_color = 0, 0, 0
+    loading_icon = Emoji('thinking')
+    rotation_rate = 5 / 360  # 5s/full rotation
+
+    def __init__(self, **props):
+        super().__init__(**props)
+        self.spinner = ppb.Sprite(image=self.loading_icon, size=4)
+        self.add(self.spinner)
+
+    def on_update(self, event, signal):
+        self.spinner.rotation += self.rotation_rate * event.time_delta
 
 
 class Region(ppb.BaseSprite):
@@ -146,6 +161,6 @@ class CustomizeScene(SelectScene):
 
 if __name__ == '__main__':
     ppb.run(
-        starting_scene=IndexScene,
+        starting_scene=LoadingScene, scene_kwargs={'next_scene': IndexScene},
         title='Mutant Standard Index',
     )
