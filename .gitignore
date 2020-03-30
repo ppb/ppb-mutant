@@ -5,7 +5,9 @@ __pycache__/
 /.mypy_cache/
 /mutant/
 /orxporter/
-/ppb_mutant/_assets/
+/ppb_mutant/_assets/*.png
+/ppb_mutant/_assets/*.txt
+!/ppb_mutant/_assets/__init__.py
 /struct.json
 /.tmp*.svg
 /pip-wheel-metadata/
