@@ -102,11 +102,6 @@ This library uses [Mutant Standard emoji](https://mutant.tech), which are licens
 
 Development
 ===========
-The compiled assets are not part of git.
+The image assets are not stored in git.
 
-If you just want a copy, pull them out of one of the PyPI packages and copy into
-`ppb_mutant/_assets`
-
-To compile them fresh, run `build.sh`, but it can take a while. This requires
-[oxipng](https://github.com/shssoichiro/oxipng) and one of ImageMagick,
-Inkscape, or rendersvg.
+You can download a copy from the mutant standard website by running `build.sh`.
