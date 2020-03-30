@@ -49,7 +49,7 @@ class EmojiSprite(Region, ppb.BaseSprite):
 
 
 class OpenMenuSprite(Region, ppb.BaseSprite):
-    image = Emoji('color_modifier', tone='k1')
+    image = Emoji('color_modifier')
 
     def on_button_pressed(self, mouse, signal):
         if self.contains(mouse.position) and mouse.button is ppb.buttons.Primary:

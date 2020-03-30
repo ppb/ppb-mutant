@@ -35,7 +35,7 @@ logger = logging.getLogger(__name__)
 MORPHS = ['hmn', 'paw', 'clw', 'hoof']
 
 TONES_ALL = [
-    None,
+    None,  # Same as k2
     # Standard
     'r1', 'r2', 'r3', 'd1', 'd2', 'd3', 'o1', 'o2', 'o3', 'y1', 'y2', 'y3',
     'l1', 'l2', 'l3', 'g1', 'g2', 'g3', 't1', 't2', 't3', 'c1', 'c2', 'c3',
