@@ -9,8 +9,8 @@ def readme():
 setup(
     name='ppb-mutant',
     version='0.9.1',
-    packages=['ppb_mutant'],
-    package_data={'ppb_mutant': ['_assets/*.png', '_assets/*.txt']},
+    packages=['ppb_mutant', 'ppb_mutant._assets'],
+    package_data={'ppb_mutant._assets': ['*.png', '*.txt']},
     install_requires=[
         'ppb~=0.7.0',
     ],
