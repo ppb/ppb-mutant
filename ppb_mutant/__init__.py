@@ -162,7 +162,8 @@ class MorphToneProxy:
         return self._group.tone
 
     def _reload(self):
-        self._image = Emoji(self.shortcode, morph=self.morph, tone=self.tone)
+        if self.shortcode in load_aliases() or self._image is None:
+            self._image = Emoji(self.shortcode, morph=self.morph, tone=self.tone)
 
     def load(self):
         if self._image is None:
@@ -235,7 +236,6 @@ class MutantSprite(ppb.BaseSprite):
 
     @property
     def image(self):
-        # print(self.emoji, self.morph, self.tone)
         if self.emoji is DoNotRender:
             return DoNotRender
         else:
