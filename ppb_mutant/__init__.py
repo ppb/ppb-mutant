@@ -114,6 +114,9 @@ def is_valid_morph_tone(morph, tone):
 
 
 def _resolve_name(shortcode, morph, tone):
+    if shortcode == 'color_modifier' and tone is None:
+        # color_modifier doesn't ship with a None tone, but None == k2
+        tone = 'k2'
     aliases = load_aliases()
 
     resolved = aliases.get(shortcode, shortcode)
