@@ -330,7 +330,8 @@ class SelectScene(ppb.BaseScene):
         yield self.Sprite(image=Emoji('hand', morph='hmn', tone='h5'), pos=(left + 4.5, 0))
 
         # Default tone
-        yield self.Sprite(image=Emoji('cross'), pos=((left + 4.5 + right - 2.5) / 2, 0))
+        # yield self.Sprite(image=Emoji('cross'), pos=((left + 4.5 + right - 2.5) / 2, 0))
+        yield self.Sprite(image=Emoji('cross'), pos=(0, 0))
 
         # TONES_PAW
         yield self.Sprite(image=Emoji('hand', morph='paw', tone='fk1'), pos=(right - 0.5, 0))
