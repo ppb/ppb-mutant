@@ -272,6 +272,10 @@ class SelectScene(ppb.BaseScene):
 
     SelectScene.Sprite can be overriden to change the sprite.
     """
+
+    #: Hoof hands have incomplete emoji coverage, so games may choose to opt-out of it.
+    include_hoof = True
+
     class Sprite(ppb.BaseSprite):
         """
         The sprite to use in the menu
@@ -309,7 +313,8 @@ class SelectScene(ppb.BaseScene):
         yield self.Sprite(image=Emoji('hand', morph='clw', tone=None), pos=(right - 0.5, 1.5))
         yield self.Sprite(image=Emoji('hand', morph='hmn', tone=None), pos=(right - 1.5, 1.5))
         yield self.Sprite(image=Emoji('hand', morph='paw', tone=None), pos=(right - 2.5, 1.5))
-        yield self.Sprite(image=Emoji('hand', morph='hoof', tone=None), pos=(right - 3.5, 1.5))
+        if self.include_hoof:
+            yield self.Sprite(image=Emoji('hand', morph='hoof', tone=None), pos=(right - 3.5, 1.5))
 
     def _grid(self):
         cam = self.main_camera
