@@ -76,16 +76,15 @@ class ProfileSprite(ppb.Sprite):
 class CustomizeScene(ppb_mutant.SelectScene):
     class Sprite(ppb_mutant.SelectScene.Sprite): pass
 
-    class BackSprite(Region, ppb_mutant.Sprite):
-        emoji = 'tick'
+    class BackSprite(Region, ppb.Sprite):
+        image = Emoji('tick')
         def on_button_pressed(self, mouse, signal):
             if self.contains(mouse.position) and mouse.button is ppb.buttons.Primary:
                 signal(ppb.events.StopScene())
 
-    def __init__(self, *p, **kw):
-        super().__init__(*p, **kw)
-        left = self.main_camera.frame_left
-        self.add(self.BackSprite(pos=(left + 2.5, 1.5)))
+    def __init__(self, **props):
+        super().__init__(**props)
+        self.add(self.BackSprite(position=(-4, 1.5)))
 
     def do_update_morphtone(self):
         print(self.morph, self.tone)
