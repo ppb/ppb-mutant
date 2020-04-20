@@ -16,6 +16,7 @@ build_task:
   setup_script:
     - git fetch --tags
     - pip install bork
+    - pip install -e .
   script:
     - ./build.sh
     - bork build
