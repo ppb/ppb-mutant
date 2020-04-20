@@ -6,7 +6,6 @@ import io
 import argparse
 import re
 import pathlib
-import ppb_mutant
 import contextlib
 
 DOWNLOADS = [
@@ -144,7 +143,7 @@ def make_root():
 
 def main():
     args = parse_args()
-    rootdir = pathlib.Path(ppb_mutant.__file__).absolute().parent
+    rootdir = pathlib.Path(__file__).absolute().parent / 'ppb_mutant'
 
     with enter_dir(rootdir):
         make_root()
