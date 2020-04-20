@@ -1,0 +1,23 @@
+pep517_task:
+  skip: $CIRRUS_BRANCH =~ '.*\.tmp'
+  container:
+    image: python:3.7
+
+  install_script:
+    - pip install --upgrade-strategy eager -U pep517
+
+  script:
+    - python3 -m pep517.check .
+
+
+build_task:
+  container:
+    image: python:3
+  setup_script:
+    - git fetch --tags
+    - pip install bork
+  script:
+    - ./build.sh
+    - bork build
+  dist_artifacts:
+    path: "dist/**"
