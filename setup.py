@@ -12,7 +12,7 @@ setup(
     packages=['ppb_mutant', 'ppb_mutant._assets'],
     package_data={'ppb_mutant._assets': ['*.png', '*.txt']},
     install_requires=[
-        'ppb~=0.7.0',
+        'ppb~=0.8.0',
     ],
     url='https://github.com/ppb/ppb-mutant',
     license='Artistic-2.0',
