@@ -32,6 +32,7 @@ print(
 logger = logging.getLogger(__name__)
 
 
+# Be sure to update these in download_zips.py
 MORPHS = ['hmn', 'paw', 'clw', 'hoof']
 
 TONES_ALL = [

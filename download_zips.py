@@ -8,13 +8,32 @@ import re
 import pathlib
 import ppb_mutant
 import contextlib
-from ppb_mutant import MORPHS, TONES
 
 DOWNLOADS = [
     ('https://mutant.tech/dl/2020.02/mtnt_2020.02_short_png128.zip', 'mtnt_2020.02_short_png128/emoji/'),
     ('https://mutant.tech/dl/vip/mutstd_vip_2018.04_all.zip', 'mutstd_vip_2018.04_all/emoji/png-128px/'),
     ('https://mutant.tech/dl/special/mtnt_special_s3.zip', 'mtnt_special_s3/emoji/png-128/'),
 ]
+
+# Copied from __init__.py
+MORPHS = ['hmn', 'paw', 'clw', 'hoof']
+
+TONES_ALL = [
+    None,  # Same as k2
+    # Standard
+    'r1', 'r2', 'r3', 'd1', 'd2', 'd3', 'o1', 'o2', 'o3', 'y1', 'y2', 'y3',
+    'l1', 'l2', 'l3', 'g1', 'g2', 'g3', 't1', 't2', 't3', 'c1', 'c2', 'c3',
+    's1', 's2', 's3', 'b1', 'b2', 'b3', 'v1', 'v2', 'v3', 'm1', 'm2', 'm3',
+    'p1', 'p2', 'p3', 'e1', 'e2', 'e3', 'k1', 'k2', 'k3',
+]
+
+TONES_HMN = ['h1', 'h2', 'h3', 'h4', 'h5']
+TONES_PAW = ['fk1', 'ft1', 'fe1']
+TONES_CLW = []
+TONES_HOOF = []
+
+TONES = TONES_ALL + TONES_HMN + TONES_PAW + TONES_CLW + TONES_HOOF
+
 
 
 @contextlib.contextmanager
