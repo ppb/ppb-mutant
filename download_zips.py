@@ -9,7 +9,7 @@ import pathlib
 import contextlib
 
 DOWNLOADS = [
-    ('https://mutant.tech/dl/2020.04/mtnt_2020.04_short_png128.zip', 'mtnt_2020.02_short_png128/emoji/'),
+    ('https://mutant.tech/dl/2020.04/mtnt_2020.04_short_png128.zip', 'mtnt_2020.04_short_png128/emoji/'),
     ('https://mutant.tech/dl/vip/mutstd_vip_2018.04_all.zip', 'mutstd_vip_2018.04_all/emoji/png-128px/'),
     ('https://mutant.tech/dl/special/mtnt_special_s3.zip', 'mtnt_special_s3/emoji/png-128/'),
 ]
