@@ -8,7 +8,6 @@ Constants:
 * TONES_ALL: Valid tone values for all morphs
 """
 import ppb
-from ppb.flags import DoNotRender
 import weakref
 import logging
 import functools
@@ -243,8 +242,8 @@ class MutantSprite(ppb.BaseSprite):
 
     @property
     def image(self):
-        if self.emoji is DoNotRender:
-            return DoNotRender
+        if self.emoji is None:
+            return None
         else:
             emoji = self.emoji.rsplit('/', 1)[-1]
             if self._image is None or (
