@@ -226,7 +226,7 @@ class MorphToneGroup:
             return e
 
 
-class MutantSprite(ppb.BaseSprite):
+class MutantSprite(ppb.Sprite):
     """
     Deprecated
     """
@@ -282,7 +282,7 @@ class SelectScene(ppb.BaseScene):
     #: Hoof hands have incomplete emoji coverage, so games may choose to opt-out of it.
     include_hoof = True
 
-    class Sprite(ppb.BaseSprite):
+    class Sprite(ppb.Sprite):
         """
         The sprite to use in the menu
         """

@@ -22,10 +22,10 @@ class LoadingScene(BaseLoadingScene):
         self.spinner.rotation += self.rotation_rate * event.time_delta
 
 
-class Region(ppb.BaseSprite):
+class Region(ppb.Sprite):
     @staticmethod
     def get_vector(other):
-        if isinstance(other, ppb.BaseSprite):
+        if isinstance(other, ppb.Sprite):
             return other.position
         else:
             return other
@@ -39,7 +39,7 @@ class Region(ppb.BaseSprite):
         )
 
 
-class EmojiSprite(Region, ppb.BaseSprite):
+class EmojiSprite(Region, ppb.Sprite):
     def __init__(self, *p, **kw):
         super().__init__(*p, **kw)
 
@@ -48,7 +48,7 @@ class EmojiSprite(Region, ppb.BaseSprite):
             print(self.image.shortcode)
 
 
-class OpenMenuSprite(Region, ppb.BaseSprite):
+class OpenMenuSprite(Region, ppb.Sprite):
     image = Emoji('color_modifier')
 
     def on_button_pressed(self, mouse, signal):
